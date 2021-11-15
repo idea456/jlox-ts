@@ -1,0 +1,27 @@
+{
+  "devDependencies": {
+    "@types/node": "^16.11.6"
+  },
+  "name": "jlox-ts",
+  "version": "1.0.0",
+  "description": "jlox implementation in Typescript",
+  "main": "jlox.js",
+  "scripts": {
+    "build": "tsc",
+    "jlox": "node ./prod/jlox.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/idea456/jlox-ts.git"
+  },
+  "author": "idea456",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/idea456/jlox-ts/issues"
+  },
+  "homepage": "https://github.com/idea456/jlox-ts#readme",
+  "dependencies": {
+    "file-api": "^0.10.4",
+    "filereader": "^0.10.3"
+  }
+}

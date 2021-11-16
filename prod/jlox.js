@@ -53,11 +53,4 @@ function runPrompt() {
 //         console.log(token);
 //     });
 // }
-function error(line, message) {
-    report(line, "", message);
-}
-function report(line, where, message) {
-    console.log(`[Line ${line}] Error ${where}: ${message}`);
-    hadError = true;
-}
 executeCommandLine(process.argv);

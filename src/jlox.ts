@@ -55,14 +55,4 @@ function runPrompt() {
 //         console.log(token);
 //     });
 // }
-
-function error(line: number, message: string) {
-    report(line, "", message);
-}
-
-function report(line: number, where: string, message: string) {
-    console.log(`[Line ${line}] Error ${where}: ${message}`);
-    hadError = true;
-}
-
 executeCommandLine(process.argv);

@@ -72,25 +72,25 @@ export default class Scanner {
     private current = 0;
     private line = 1;
 
-    static readonly keywords: { [key: string]: TokenType | null } = {};
+    static readonly keywords = new Map<string, TokenType>();
 
     static {
-        this.keywords["and"] = TokenType.AND;
-        this.keywords["or"] = TokenType.OR;
-        this.keywords["class"] = TokenType.CLASS;
-        this.keywords["else"] = TokenType.ELSE;
-        this.keywords["false"] = TokenType.FALSE;
-        this.keywords["for"] = TokenType.FOR;
-        this.keywords["fun"] = TokenType.FUN;
-        this.keywords["if"] = TokenType.IF;
-        this.keywords["nil"] = TokenType.NIL;
-        this.keywords["print"] = TokenType.PRINT;
-        this.keywords["return"] = TokenType.RETURN;
-        this.keywords["super"] = TokenType.SUPER;
-        this.keywords["this"] = TokenType.THIS;
-        this.keywords["true"] = TokenType.TRUE;
-        this.keywords["var"] = TokenType.VAR;
-        this.keywords["while"] = TokenType.WHILE;
+        this.keywords.set("and", TokenType.AND);
+        this.keywords.set("or", TokenType.OR);
+        this.keywords.set("class", TokenType.CLASS);
+        this.keywords.set("else", TokenType.ELSE);
+        this.keywords.set("false", TokenType.FALSE);
+        this.keywords.set("for", TokenType.FOR);
+        this.keywords.set("fun", TokenType.FUN);
+        this.keywords.set("if", TokenType.IF);
+        this.keywords.set("nil", TokenType.NIL);
+        this.keywords.set("print", TokenType.PRINT);
+        this.keywords.set("return", TokenType.RETURN);
+        this.keywords.set("super", TokenType.SUPER);
+        this.keywords.set("this", TokenType.THIS);
+        this.keywords.set("true", TokenType.TRUE);
+        this.keywords.set("var", TokenType.VAR);
+        this.keywords.set("while", TokenType.WHILE);
     }
 
     constructor(source: string) {
@@ -284,16 +284,16 @@ export default class Scanner {
     }
 
     scanIdentifier() {
-        // scan the indentifiers
+        // perform maximal munch: scan the most characters as possible
+        // to avoid cases where for instance: whiled is matched as WHILE token instead of IDENTIFIER token
         while (this.isAlpha(this.peek()) || this.isNumber(this.peek())) {
             this.advance();
         }
 
-        // check if variable
         let text = this.source.substring(this.start, this.current);
-        let type = Scanner.keywords[text];
-        console.log("type: ", type);
-        if (type === null) {
+        let type = Scanner.keywords.get(text);
+        // if it is an identifier
+        if (type === undefined) {
             type = TokenType.IDENTIFIER;
         }
         this.addToken(type);

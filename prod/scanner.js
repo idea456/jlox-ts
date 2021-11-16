@@ -237,9 +237,9 @@ class Scanner {
         }
         // check if variable
         let text = this.source.substring(this.start, this.current);
-        let type = Scanner.keywords[text];
+        let type = Scanner.keywords.get(text);
         console.log("type: ", type);
-        if (type === null) {
+        if (type === undefined) {
             type = TokenType.IDENTIFIER;
         }
         this.addToken(type);
@@ -247,22 +247,22 @@ class Scanner {
 }
 exports.default = Scanner;
 _a = Scanner;
-Scanner.keywords = {};
+Scanner.keywords = new Map();
 (() => {
-    _a.keywords["and"] = TokenType.AND;
-    _a.keywords["or"] = TokenType.OR;
-    _a.keywords["class"] = TokenType.CLASS;
-    _a.keywords["else"] = TokenType.ELSE;
-    _a.keywords["false"] = TokenType.FALSE;
-    _a.keywords["for"] = TokenType.FOR;
-    _a.keywords["fun"] = TokenType.FUN;
-    _a.keywords["if"] = TokenType.IF;
-    _a.keywords["nil"] = TokenType.NIL;
-    _a.keywords["print"] = TokenType.PRINT;
-    _a.keywords["return"] = TokenType.RETURN;
-    _a.keywords["super"] = TokenType.SUPER;
-    _a.keywords["this"] = TokenType.THIS;
-    _a.keywords["true"] = TokenType.TRUE;
-    _a.keywords["var"] = TokenType.VAR;
-    _a.keywords["while"] = TokenType.WHILE;
+    _a.keywords.set("and", TokenType.AND);
+    _a.keywords.set("or", TokenType.OR);
+    _a.keywords.set("class", TokenType.CLASS);
+    _a.keywords.set("else", TokenType.ELSE);
+    _a.keywords.set("false", TokenType.FALSE);
+    _a.keywords.set("for", TokenType.FOR);
+    _a.keywords.set("fun", TokenType.FUN);
+    _a.keywords.set("if", TokenType.IF);
+    _a.keywords.set("nil", TokenType.NIL);
+    _a.keywords.set("print", TokenType.PRINT);
+    _a.keywords.set("return", TokenType.RETURN);
+    _a.keywords.set("super", TokenType.SUPER);
+    _a.keywords.set("this", TokenType.THIS);
+    _a.keywords.set("true", TokenType.TRUE);
+    _a.keywords.set("var", TokenType.VAR);
+    _a.keywords.set("while", TokenType.WHILE);
 })();

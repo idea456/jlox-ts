@@ -231,14 +231,14 @@ class Scanner {
         return (c >= "a" && c <= "z") || (c >= "A" && c <= "Z") || c === "_";
     }
     scanIdentifier() {
-        // scan the indentifiers
+        // perform maximal munching: scan the most characters as possible
+        // to avoid cases where for instance: whiled is matched as WHILE token instead of IDENTIFIER token
         while (this.isAlpha(this.peek()) || this.isNumber(this.peek())) {
             this.advance();
         }
-        // check if variable
         let text = this.source.substring(this.start, this.current);
         let type = Scanner.keywords.get(text);
-        console.log("type: ", type);
+        // if it is an identifier
         if (type === undefined) {
             type = TokenType.IDENTIFIER;
         }

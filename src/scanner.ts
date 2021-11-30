@@ -284,7 +284,7 @@ export default class Scanner {
     }
 
     scanIdentifier() {
-        // perform maximal munch: scan the most characters as possible
+        // perform maximal munching: scan the most characters as possible
         // to avoid cases where for instance: whiled is matched as WHILE token instead of IDENTIFIER token
         while (this.isAlpha(this.peek()) || this.isNumber(this.peek())) {
             this.advance();

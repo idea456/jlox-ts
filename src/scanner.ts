@@ -48,14 +48,14 @@ export enum TokenType {
 
 export class Token {
     readonly type: TokenType;
-    readonly lexeme: string | null;
-    readonly literal?: any | null;
+    readonly lexeme: string;
+    readonly literal?: any;
     readonly line?: number | null;
 
     constructor(
         type: TokenType,
-        lexeme: string | null,
-        literal?: object | null,
+        lexeme: string = "",
+        literal?: any,
         line?: number,
     ) {
         this.type = type;
@@ -212,7 +212,7 @@ export default class Scanner {
 
     addToken(type: TokenType, literal?: any) {
         if (literal === undefined) {
-            this.tokens.push(new Token(type, null));
+            this.tokens.push(new Token(type));
         } else {
             let text = this.source.substring(this.start, this.current);
             this.tokens.push(new Token(type, text, literal, this.line));
@@ -251,7 +251,7 @@ export default class Scanner {
         }
 
         let str = this.source.substring(this.start + 1, this.current);
-        this.tokens.push(new Token(TokenType.STRING, str));
+        this.tokens.push(new Token(TokenType.STRING, str, str));
         this.current++;
     }
 

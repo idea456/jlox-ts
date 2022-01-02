@@ -1,6 +1,8 @@
 import { readFileSync } from "fs";
 import { join } from "path";
-import Scanner from "./scanner";
+import { Expression } from "./expr";
+import { Parser } from "./parser";
+import Scanner, { Token } from "./scanner";
 
 var hadError = false;
 
@@ -36,13 +38,17 @@ function runFile(filePath: string) {
 }
 
 function runPrompt() {
+    let parser;
     readline.question(">>> ", (line: string) => {
         if (line === "exit") {
             process.exit(0);
         }
         // run(line);
         let scanner = new Scanner(line);
-        scanner.scanTokens();
+        let tokens: Array<Token> = scanner.scanTokens();
+        parser = new Parser(tokens);
+        let expression: Expression | null = parser.parse();
+        console.log("expr : ", expression);
         runPrompt();
     });
 }

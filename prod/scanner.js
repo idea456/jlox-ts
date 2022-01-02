@@ -50,7 +50,7 @@ var TokenType;
     TokenType[TokenType["EOF"] = 38] = "EOF";
 })(TokenType = exports.TokenType || (exports.TokenType = {}));
 class Token {
-    constructor(type, lexeme, literal, line) {
+    constructor(type, lexeme = "", literal, line) {
         this.type = type;
         this.lexeme = lexeme;
         this.literal = literal;
@@ -170,7 +170,7 @@ class Scanner {
     }
     addToken(type, literal) {
         if (literal === undefined) {
-            this.tokens.push(new Token(type, null));
+            this.tokens.push(new Token(type));
         }
         else {
             let text = this.source.substring(this.start, this.current);
@@ -208,7 +208,7 @@ class Scanner {
             (0, error_1.error)(this.line, "Unterminated string.");
         }
         let str = this.source.substring(this.start + 1, this.current);
-        this.tokens.push(new Token(TokenType.STRING, str));
+        this.tokens.push(new Token(TokenType.STRING, str, str));
         this.current++;
     }
     isNumber(c) {

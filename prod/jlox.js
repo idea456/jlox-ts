@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = require("fs");
 const path_1 = require("path");
+const parser_1 = require("./parser");
 const scanner_1 = __importDefault(require("./scanner"));
 var hadError = false;
 const readline = require("node:readline").createInterface({
@@ -36,13 +37,17 @@ function runFile(filePath) {
     }
 }
 function runPrompt() {
+    let parser;
     readline.question(">>> ", (line) => {
         if (line === "exit") {
             process.exit(0);
         }
         // run(line);
         let scanner = new scanner_1.default(line);
-        scanner.scanTokens();
+        let tokens = scanner.scanTokens();
+        parser = new parser_1.Parser(tokens);
+        let expression = parser.parse();
+        console.log("expr : ", expression);
         runPrompt();
     });
 }

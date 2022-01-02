@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Var = exports.This = exports.Super = exports.Logical = exports.Unary = exports.Literal = exports.Grouping = exports.Set = exports.Get = exports.Call = exports.Assign = exports.Binary = exports.Expression = void 0;
 // Each subclass in the Expression class represents a production under the expression
 /*
     Assign : Token name , Expression value
@@ -17,6 +18,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 */
 class Expression {
 }
+exports.Expression = Expression;
 class Binary extends Expression {
     constructor(left, operator, right) {
         super();
@@ -28,6 +30,7 @@ class Binary extends Expression {
         return visitor.visitBinaryExpr(this);
     }
 }
+exports.Binary = Binary;
 class Assign extends Expression {
     constructor(name, value) {
         super();
@@ -38,6 +41,7 @@ class Assign extends Expression {
         return visitor.visitAssignExpr(this);
     }
 }
+exports.Assign = Assign;
 class Call extends Expression {
     constructor(callee, paren, args) {
         super();
@@ -49,6 +53,7 @@ class Call extends Expression {
         return visitor.visitCallExpr(this);
     }
 }
+exports.Call = Call;
 class Get extends Expression {
     constructor(object, name) {
         super();
@@ -59,6 +64,7 @@ class Get extends Expression {
         return visitor.visitGetExpr(this);
     }
 }
+exports.Get = Get;
 class Set extends Expression {
     constructor(object, name, value) {
         super();
@@ -70,6 +76,7 @@ class Set extends Expression {
         return visitor.visitSetExpr(this);
     }
 }
+exports.Set = Set;
 class Grouping extends Expression {
     constructor(expression) {
         super();
@@ -79,6 +86,7 @@ class Grouping extends Expression {
         return visitor.visitGroupingExpr(this);
     }
 }
+exports.Grouping = Grouping;
 class Literal extends Expression {
     constructor(value) {
         super();
@@ -88,6 +96,7 @@ class Literal extends Expression {
         return visitor.visitLiteralExpr(this);
     }
 }
+exports.Literal = Literal;
 class Unary extends Expression {
     constructor(operator, right) {
         super();
@@ -98,6 +107,7 @@ class Unary extends Expression {
         return visitor.visitUnaryExpr(this);
     }
 }
+exports.Unary = Unary;
 class Logical extends Expression {
     constructor(left, operator, right) {
         super();
@@ -109,6 +119,7 @@ class Logical extends Expression {
         return visitor.visitLogicalExpr(this);
     }
 }
+exports.Logical = Logical;
 class Super extends Expression {
     constructor(keyword, method) {
         super();
@@ -119,6 +130,7 @@ class Super extends Expression {
         return visitor.visitSuperExpr(this);
     }
 }
+exports.Super = Super;
 class This extends Expression {
     constructor(keyword) {
         super();
@@ -128,6 +140,7 @@ class This extends Expression {
         return visitor.visitThisExpr(this);
     }
 }
+exports.This = This;
 class Var extends Expression {
     constructor(name) {
         super();
@@ -137,3 +150,4 @@ class Var extends Expression {
         return visitor.visitVarExpr(this);
     }
 }
+exports.Var = Var;

@@ -1,13 +1,21 @@
-interface ErrorReporter {
-    line: number;
-    where: string;
-    message: string;
-}
+import { Token, TokenType } from "./scanner";
 
 export function error(line: number, message: string) {
-    report({ line, where: "", message });
+    report(line, "", message);
 }
 
-function report(err: ErrorReporter) {
-    console.log(`[Line ${err.line}] Error ${err.where}: ${err.message}`);
+function report(
+    line: number | null | undefined,
+    where: string,
+    message: string,
+) {
+    console.log(`[Line ${line}] Error ${where}: ${message}`);
+}
+
+export function tokenError(token: Token, message: string) {
+    if (token.type === TokenType.EOF) {
+        report(token.line, "at end", message);
+    } else {
+        report(token.line, " at '" + token.lexeme + "'", message);
+    }
 }

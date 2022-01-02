@@ -16,12 +16,12 @@ import { Token } from "./scanner";
     Var : Token name
 
 */
-abstract class Expression {
+export abstract class Expression {
     abstract accept<R>(visitor: Visitor<R>): R;
 }
 
 // implement the Visitor pattern: https://refactoring.guru/design-patterns/visitor
-interface Visitor<R> extends Expression {
+export interface Visitor<R> extends Expression {
     visitAssignExpr(expr: Assign): R;
     visitBinaryExpr(expr: Binary): R;
     visitCallExpr(expr: Call): R;
@@ -36,7 +36,7 @@ interface Visitor<R> extends Expression {
     visitVarExpr(expr: Var): R;
 }
 
-class Binary extends Expression {
+export class Binary extends Expression {
     readonly left: Expression;
     readonly operator: Token;
     readonly right: Expression;
@@ -53,7 +53,7 @@ class Binary extends Expression {
     }
 }
 
-class Assign extends Expression {
+export class Assign extends Expression {
     readonly name: Token;
     readonly value: Expression;
 
@@ -68,7 +68,7 @@ class Assign extends Expression {
     }
 }
 
-class Call extends Expression {
+export class Call extends Expression {
     readonly callee: Expression;
     readonly paren: Token;
     readonly args: Array<Expression>;
@@ -85,7 +85,7 @@ class Call extends Expression {
     }
 }
 
-class Get extends Expression {
+export class Get extends Expression {
     readonly object: Expression;
     readonly name: Token;
 
@@ -100,7 +100,7 @@ class Get extends Expression {
     }
 }
 
-class Set extends Expression {
+export class Set extends Expression {
     readonly object: Expression;
     readonly name: Token;
     readonly value: Expression;
@@ -117,7 +117,7 @@ class Set extends Expression {
     }
 }
 
-class Grouping extends Expression {
+export class Grouping extends Expression {
     readonly expression: Expression;
 
     constructor(expression: Expression) {
@@ -130,10 +130,10 @@ class Grouping extends Expression {
     }
 }
 
-class Literal extends Expression {
-    readonly value: Object;
+export class Literal extends Expression {
+    readonly value: Object | null;
 
-    constructor(value: Object) {
+    constructor(value: Object | null) {
         super();
         this.value = value;
     }
@@ -143,7 +143,7 @@ class Literal extends Expression {
     }
 }
 
-class Unary extends Expression {
+export class Unary extends Expression {
     readonly operator: Token;
     readonly right: Expression;
 
@@ -158,7 +158,7 @@ class Unary extends Expression {
     }
 }
 
-class Logical extends Expression {
+export class Logical extends Expression {
     readonly left: Expression;
     readonly operator: Token;
     readonly right: Expression;
@@ -175,7 +175,7 @@ class Logical extends Expression {
     }
 }
 
-class Super extends Expression {
+export class Super extends Expression {
     readonly keyword: Token;
     readonly method: Token;
 
@@ -190,7 +190,7 @@ class Super extends Expression {
     }
 }
 
-class This extends Expression {
+export class This extends Expression {
     readonly keyword: Token;
 
     constructor(keyword: Token) {
@@ -203,7 +203,7 @@ class This extends Expression {
     }
 }
 
-class Var extends Expression {
+export class Var extends Expression {
     readonly name: Token;
 
     constructor(name: Token) {

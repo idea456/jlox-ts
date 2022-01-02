@@ -123,49 +123,55 @@ export default class Scanner {
 
         switch (c) {
             case "(":
-                this.addToken(TokenType.LEFT_PAREN);
+                this.addToken(TokenType.LEFT_PAREN, "(", null);
                 break;
             case ")":
-                this.addToken(TokenType.RIGHT_PAREN);
+                this.addToken(TokenType.RIGHT_PAREN, ")", null);
                 break;
             case "{":
-                this.addToken(TokenType.LEFT_BRACE);
+                this.addToken(TokenType.LEFT_BRACE, "{", null);
                 break;
             case "}":
-                this.addToken(TokenType.RIGHT_BRACE);
+                this.addToken(TokenType.RIGHT_BRACE, "}", null);
                 break;
             case ",":
-                this.addToken(TokenType.COMMA);
+                this.addToken(TokenType.COMMA, ",", null);
                 break;
             case ".":
-                this.addToken(TokenType.DOT);
+                this.addToken(TokenType.DOT, ".", null);
                 break;
             case "-":
-                this.addToken(TokenType.MINUS);
+                this.addToken(TokenType.MINUS, "-", null);
                 break;
             case "+":
-                this.addToken(TokenType.PLUS);
+                this.addToken(TokenType.PLUS, "+", null);
                 break;
             case ";":
-                this.addToken(TokenType.SEMICOLON);
+                this.addToken(TokenType.SEMICOLON, ";", null);
                 break;
             case "*":
-                this.addToken(TokenType.STAR);
+                this.addToken(TokenType.STAR, "*", null);
                 break;
             // handle cases for !=, ==, <=, >=
             case "!":
                 this.addToken(
                     this.match("=") ? TokenType.BANG_EQUAL : TokenType.BANG,
+                    this.match("=") ? "!=" : "!",
+                    null,
                 );
                 break;
             case "=":
                 this.addToken(
                     this.match("=") ? TokenType.EQUAL_EQUAL : TokenType.EQUAL,
+                    this.match("=") ? "==" : "=",
+                    null,
                 );
                 break;
             case "<":
                 this.addToken(
                     this.match("=") ? TokenType.LESS_EQUAL : TokenType.LESS,
+                    this.match("=") ? "<=" : "<",
+                    null,
                 );
                 break;
             case ">":
@@ -173,6 +179,8 @@ export default class Scanner {
                     this.match("=")
                         ? TokenType.GREATER_EQUAL
                         : TokenType.GREATER,
+                    this.match("=") ? ">=" : "=",
+                    null,
                 );
                 break;
             // handle comments
@@ -183,7 +191,7 @@ export default class Scanner {
                         this.advance();
                     }
                 } else {
-                    this.addToken(TokenType.SLASH);
+                    this.addToken(TokenType.SLASH, "/", null);
                 }
                 break;
             // ignore newlines and whitespaces
@@ -210,9 +218,9 @@ export default class Scanner {
         }
     }
 
-    addToken(type: TokenType, literal?: any) {
+    addToken(type: TokenType, lexeme: string, literal?: any) {
         if (literal === undefined) {
-            this.tokens.push(new Token(type));
+            this.tokens.push(new Token(type, lexeme, null));
         } else {
             let text = this.source.substring(this.start, this.current);
             this.tokens.push(new Token(type, text, literal, this.line));
@@ -275,6 +283,7 @@ export default class Scanner {
 
         this.addToken(
             TokenType.NUMBER,
+            "",
             parseFloat(this.source.substring(this.start, this.current)),
         );
     }
@@ -296,6 +305,6 @@ export default class Scanner {
         if (type === undefined) {
             type = TokenType.IDENTIFIER;
         }
-        this.addToken(type);
+        this.addToken(type, "", "");
     }
 }

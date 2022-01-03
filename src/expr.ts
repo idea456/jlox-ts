@@ -131,9 +131,9 @@ export class Grouping extends Expression {
 }
 
 export class Literal extends Expression {
-    readonly value: Object | null;
+    readonly value: Object;
 
-    constructor(value: Object | null) {
+    constructor(value: Object) {
         super();
         this.value = value;
     }
@@ -215,3 +215,5 @@ export class Var extends Expression {
         return visitor.visitVarExpr(this);
     }
 }
+
+export class Nil extends Object {}

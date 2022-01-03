@@ -1,5 +1,5 @@
 import { error, tokenError } from "./error";
-import { Binary, Expression, Grouping, Literal, Unary } from "./expr";
+import { Binary, Expression, Grouping, Literal, Nil, Unary } from "./expr";
 import { Token, TokenType } from "./scanner";
 
 /**
@@ -118,7 +118,7 @@ export class Parser {
      */
     private primary(): Expression {
         if (this.match(TokenType.NUMBER, TokenType.STRING)) {
-            return new Literal(this.previous().literal);
+            return new Literal(this.previous().literal); // previous() is called since match() has consumed our token
         }
         if (this.match(TokenType.TRUE)) {
             return new Literal(true);
@@ -127,7 +127,7 @@ export class Parser {
             return new Literal(false);
         }
         if (this.match(TokenType.NIL)) {
-            return new Literal(null);
+            return new Literal(Nil);
         }
         if (this.match(TokenType.LEFT_PAREN)) {
             let expr: Expression = this.expression();
@@ -177,6 +177,7 @@ export class Parser {
         }
     }
 
+    // match() consumes the token ONLY IF it matches the checked type and advances the current pointer by 1
     private match(...types: Array<TokenType>): boolean {
         for (let i = 0; i < types.length; i++) {
             if (this.check(types[i])) {

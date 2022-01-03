@@ -94,7 +94,7 @@ class Parser {
      */
     primary() {
         if (this.match(scanner_1.TokenType.NUMBER, scanner_1.TokenType.STRING)) {
-            return new expr_1.Literal(this.previous().literal);
+            return new expr_1.Literal(this.previous().literal); // previous() is called since match() has consumed our token
         }
         if (this.match(scanner_1.TokenType.TRUE)) {
             return new expr_1.Literal(true);
@@ -145,6 +145,7 @@ class Parser {
             this.advance(); // keep discarding tokens until we found a statement
         }
     }
+    // match() consumes the token ONLY IF it matches the checked type and advances the current pointer by 1
     match(...types) {
         for (let i = 0; i < types.length; i++) {
             if (this.check(types[i])) {

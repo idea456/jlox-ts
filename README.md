@@ -4,8 +4,8 @@ A jlox interpreter written in Typescript.
 
 -   [x] Scanner
 -   [x] Grammar
--   [ ] Parser
--   [ ] Static analysis
+-   [x] Parser
+-   [ ] Static analysis and evaluation
 -   [ ] Intermediate representation
 -   [ ] Optimization
 -   [ ] Virtual machine

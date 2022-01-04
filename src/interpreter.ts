@@ -82,10 +82,8 @@ export class Interpreter implements Visitor<Object> {
                 this.checkOperands(expr.operator, left, right);
                 return (left as number) <= (right as number);
             case TokenType.EQUAL_EQUAL:
-                this.checkOperands(expr.operator, left, right);
                 return this.isEqual(left, right);
             case TokenType.BANG_EQUAL:
-                this.checkOperands(expr.operator, left, right);
                 return !this.isEqual(left, right);
         }
 

@@ -59,10 +59,8 @@ class Interpreter {
                 this.checkOperands(expr.operator, left, right);
                 return left <= right;
             case scanner_1.TokenType.EQUAL_EQUAL:
-                this.checkOperands(expr.operator, left, right);
                 return this.isEqual(left, right);
             case scanner_1.TokenType.BANG_EQUAL:
-                this.checkOperands(expr.operator, left, right);
                 return !this.isEqual(left, right);
         }
         // TODO: fix issues with returning null values

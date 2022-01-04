@@ -44,8 +44,11 @@ procedure checkPrime(n):
 procedure getNodes():
     set nodes to {}
     while nodes.length === 0:
-        if nodes[i] === null then:
+        if nodes[i] === null then: 
             set nodes[i] to 0
+        else if (nodes[i] is number) {
+            set nodes[i] to "0"
+        }
         else:
             set nodes[i] to nodes[i] + 1
         set node to Node()

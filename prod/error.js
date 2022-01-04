@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.tokenError = exports.error = void 0;
+exports.RuntimeError = exports.tokenError = exports.error = void 0;
 const scanner_1 = require("./scanner");
 function error(line, message) {
     report(line, "", message);
@@ -18,3 +18,10 @@ function tokenError(token, message) {
     }
 }
 exports.tokenError = tokenError;
+class RuntimeError extends Error {
+    constructor(token, message) {
+        super(message);
+        this.token = token;
+    }
+}
+exports.RuntimeError = RuntimeError;

@@ -19,3 +19,12 @@ export function tokenError(token: Token, message: string) {
         report(token.line, " at '" + token.lexeme + "'", message);
     }
 }
+
+export class RuntimeError extends Error {
+    readonly token: Token;
+
+    constructor(token: Token, message: string) {
+        super(message);
+        this.token = token;
+    }
+}

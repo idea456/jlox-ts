@@ -114,7 +114,7 @@ export default class Scanner {
         }
 
         this.tokens.push(new Token(TokenType.EOF, "", null, this.line));
-        console.log(this.tokens);
+        // console.log(this.tokens);
         return this.tokens;
     }
 

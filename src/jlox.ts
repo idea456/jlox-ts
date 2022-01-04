@@ -1,10 +1,14 @@
 import { readFileSync } from "fs";
 import { join } from "path";
+import { RuntimeError } from "./error";
 import { Expression } from "./expr";
+import { Interpreter } from "./interpreter";
 import { Parser } from "./parser";
 import Scanner, { Token } from "./scanner";
 
 var hadError = false;
+var hadRuntimeError = false;
+var interpreter = new Interpreter();
 
 const readline = require("node:readline").createInterface({
     input: process.stdin,
@@ -35,6 +39,9 @@ function runFile(filePath: string) {
     if (hadError) {
         process.exit(65);
     }
+    if (hadRuntimeError) {
+        process.exit(70);
+    }
 }
 
 function runPrompt() {
@@ -43,14 +50,26 @@ function runPrompt() {
         if (line === "exit") {
             process.exit(0);
         }
-        // run(line);
+
         let scanner = new Scanner(line);
         let tokens: Array<Token> = scanner.scanTokens();
         parser = new Parser(tokens);
-        let expression: Expression | null = parser.parse();
+        let expression: Expression = parser.parse();
         console.log("expr : ", expression);
+        interpreter.interpret(expression);
+        if (hadError) {
+            process.exit(65);
+        }
+        if (hadRuntimeError) {
+            process.exit(70);
+        }
         runPrompt();
     });
+}
+
+export function runtimeError(err: RuntimeError) {
+    console.log(`\n[Line ${err.token.line}] `);
+    hadRuntimeError = true;
 }
 
 // function run(source: string) {

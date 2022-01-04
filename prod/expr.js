@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Var = exports.This = exports.Super = exports.Logical = exports.Unary = exports.Literal = exports.Grouping = exports.Set = exports.Get = exports.Call = exports.Assign = exports.Binary = exports.Expression = void 0;
+exports.Nil = exports.Var = exports.This = exports.Super = exports.Logical = exports.Unary = exports.Literal = exports.Grouping = exports.Set = exports.Get = exports.Call = exports.Assign = exports.Binary = exports.Expression = void 0;
 // Each subclass in the Expression class represents a production under the expression
 /*
     Assign : Token name , Expression value
@@ -151,3 +151,6 @@ class Var extends Expression {
     }
 }
 exports.Var = Var;
+class Nil extends Object {
+}
+exports.Nil = Nil;

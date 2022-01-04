@@ -81,12 +81,12 @@ class Parser {
      * ("!" / "-") unary | primary;
      */
     unary() {
-        let expr = this.primary();
         if (this.match(scanner_1.TokenType.BANG, scanner_1.TokenType.MINUS)) {
             const operator = this.previous();
             const right = this.unary();
             return new expr_1.Unary(operator, right);
         }
+        let expr = this.primary();
         return expr;
     }
     /**
@@ -103,7 +103,7 @@ class Parser {
             return new expr_1.Literal(false);
         }
         if (this.match(scanner_1.TokenType.NIL)) {
-            return new expr_1.Literal(null);
+            return new expr_1.Literal(expr_1.Nil);
         }
         if (this.match(scanner_1.TokenType.LEFT_PAREN)) {
             let expr = this.expression();
@@ -184,7 +184,7 @@ class Parser {
             return this.expression();
         }
         catch (_a) {
-            return null;
+            return new expr_1.Literal(expr_1.Nil);
         }
     }
 }

@@ -3,11 +3,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.runtimeError = void 0;
 const fs_1 = require("fs");
 const path_1 = require("path");
+const interpreter_1 = require("./interpreter");
 const parser_1 = require("./parser");
 const scanner_1 = __importDefault(require("./scanner"));
 var hadError = false;
+var hadRuntimeError = false;
+var interpreter = new interpreter_1.Interpreter();
 const readline = require("node:readline").createInterface({
     input: process.stdin,
     output: process.stdout,
@@ -35,6 +39,9 @@ function runFile(filePath) {
     if (hadError) {
         process.exit(65);
     }
+    if (hadRuntimeError) {
+        process.exit(70);
+    }
 }
 function runPrompt() {
     let parser;
@@ -42,15 +49,26 @@ function runPrompt() {
         if (line === "exit") {
             process.exit(0);
         }
-        // run(line);
         let scanner = new scanner_1.default(line);
         let tokens = scanner.scanTokens();
         parser = new parser_1.Parser(tokens);
         let expression = parser.parse();
         console.log("expr : ", expression);
+        interpreter.interpret(expression);
+        if (hadError) {
+            process.exit(65);
+        }
+        if (hadRuntimeError) {
+            process.exit(70);
+        }
         runPrompt();
     });
 }
+function runtimeError(err) {
+    console.log(`\n[Line ${err.token.line}] `);
+    hadRuntimeError = true;
+}
+exports.runtimeError = runtimeError;
 // function run(source: string) {
 //     const scanner = new Scanner(source);
 //     const tokens = scanner.scanTokens();

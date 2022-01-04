@@ -102,14 +102,12 @@ export class Parser {
      * ("!" / "-") unary | primary;
      */
     private unary(): Expression {
-        let expr: Expression = this.primary();
-
         if (this.match(TokenType.BANG, TokenType.MINUS)) {
             const operator: Token = this.previous();
             const right: Expression = this.unary();
             return new Unary(operator, right);
         }
-
+        let expr: Expression = this.primary();
         return expr;
     }
 
@@ -217,11 +215,11 @@ export class Parser {
         return this.peek().type === TokenType.EOF;
     }
 
-    parse(): Expression | null {
+    parse(): Expression {
         try {
             return this.expression();
         } catch {
-            return null;
+            return new Literal(Nil);
         }
     }
 }

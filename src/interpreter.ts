@@ -68,17 +68,38 @@ export class Interpreter implements Visitor<Object> {
                 return (left as number) * (right as number);
             case TokenType.SLASH:
                 this.checkOperands(expr.operator, left, right);
+                if ((right as number) === 0) {
+                    throw new RuntimeError(
+                        expr.operator,
+                        "Cannot divide numbers by 0!",
+                    );
+                }
                 return (left as number) / (right as number);
+            case TokenType.MODULUS:
+                this.checkOperands(expr.operator, left, right);
+                return (left as number) % (right as number);
             case TokenType.GREATER:
+                if ((left as string) && (right as string)) {
+                    return left > right;
+                }
                 this.checkOperands(expr.operator, left, right);
                 return (left as number) > (right as number);
             case TokenType.GREATER_EQUAL:
+                if ((left as string) && (right as string)) {
+                    return left >= right;
+                }
                 this.checkOperands(expr.operator, left, right);
                 return (left as number) >= (right as number);
             case TokenType.LESS:
+                if ((left as string) && (right as string)) {
+                    return left < right;
+                }
                 this.checkOperands(expr.operator, left, right);
                 return (left as number) < (right as number);
             case TokenType.LESS_EQUAL:
+                if ((left as string) && (right as string)) {
+                    return left <= right;
+                }
                 this.checkOperands(expr.operator, left, right);
                 return (left as number) <= (right as number);
             case TokenType.EQUAL_EQUAL:

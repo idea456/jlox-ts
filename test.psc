@@ -56,3 +56,20 @@ procedure getNodes():
         set node.value to null
         push node to nodes
         
+
+define getNodes():
+    set nodes to {}
+    assume PI to 3.14
+    while nodes.length === 0 then
+        if nodes[i] === null then
+            set nodes[i] to 0
+        elsif (nodes[i] is number) then
+            set nodes[i] to "0"
+        }
+        else:
+            set nodes[i] to nodes[i] + 1
+        set node to Node()
+        set node.i to 0
+        set node.value to null
+        push node to nodes
+        return nodes.length === 0 then true else false

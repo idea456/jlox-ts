@@ -13,6 +13,7 @@ export enum TokenType {
     SEMICOLON,
     SLASH,
     STAR,
+    MODULUS,
     // one or two character tokens
     BANG,
     BANG_EQUAL,
@@ -151,6 +152,9 @@ export default class Scanner {
                 break;
             case "*":
                 this.addToken(TokenType.STAR, "*", null);
+                break;
+            case "%":
+                this.addToken(TokenType.MODULUS, "%", null);
                 break;
             // handle cases for !=, ==, <=, >=
             case "!":

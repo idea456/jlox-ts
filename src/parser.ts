@@ -4,11 +4,12 @@ import { Token, TokenType } from "./scanner";
 
 /**
  * Stratified grammar by precedence (lowest to highest):
+ * print_stmt -> "print" expression ";"
  * expression -> equality;
  * equality -> comparison (("==" | "!=") comparison)*;
  * comparison -> term ((">" | "<" | ">=" | "<=") term)*;
  * term ->  factor (("+" | "-") factor)* ;
- * factor -> unary (("*" | "/") unary)*;
+ * factor -> unary (("*" | "/" | "%") unary)*;
  * unary -> ("!" / "-") unary | primary;
  * primary -> NUMBER | STRING | | "true" | "false" | "nil" | "(" expression ")" ;
  */
@@ -84,12 +85,12 @@ export class Parser {
     }
 
     /**
-     * factor -> unary (("*" | "/") unary)*;
+     * factor -> unary (("*" | "/", | "%") unary)*;
      */
     private factor(): Expression {
         let expr: Expression = this.unary();
 
-        while (this.match(TokenType.STAR, TokenType.SLASH)) {
+        while (this.match(TokenType.STAR, TokenType.SLASH, TokenType.MODULUS)) {
             const operator: Token = this.previous();
             const right: Expression = this.unary();
             expr = new Binary(expr, operator, right);

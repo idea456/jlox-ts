@@ -8,10 +8,9 @@ export abstract class Statement {
 export interface Visitor<R> extends Statement {
     visitExprStatement(expr: Expr): R;
     visitPrintStatement(expr: Print): R;
-    visitVarStatement(expr: Var): R;
     visitUnaryStatement(expr: Unary): R;
     visitVariableStatement(expr: Variable): R;
-    visitAssignStatement(expr: Assign): R;
+    visitBlockStatement(expr: Block): R;
 }
 
 /**
@@ -57,7 +56,7 @@ export class Var extends Statement {
     }
 
     accept<R>(visitor: Visitor<R>): R {
-        return visitor.visitVarStatement(this);
+        return visitor.visitVariableStatement(this);
     }
 }
 
@@ -89,17 +88,15 @@ export class Variable extends Statement {
     }
 }
 
-export class Assign extends Statement {
-    readonly name: Token;
-    readonly value: Expression;
+export class Block extends Statement {
+    readonly statements: Array<Statement>;
 
-    constructor(name: Token, value: Expression) {
+    constructor(statements: Array<Statement>) {
         super();
-        this.name = name;
-        this.value = value;
+        this.statements = statements;
     }
 
     accept<R>(visitor: Visitor<R>): R {
-        return visitor.visitAssignStatement(this);
+        return visitor.visitBlockStatement(this);
     }
 }

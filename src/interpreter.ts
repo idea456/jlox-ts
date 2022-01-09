@@ -13,12 +13,13 @@ import {
     Super,
     This,
     Unary,
-    Variable,
+    Variable as ExprVariable,
     Visitor as ExprVisitor,
 } from "./expr";
 import { Token, TokenType } from "./scanner";
 import { runtimeError } from "./jlox";
 import {
+    Block,
     Expr,
     Print,
     Statement,
@@ -29,7 +30,7 @@ import {
 import Environment from "./environment";
 
 export class Interpreter implements ExprVisitor<Object>, StmtVisitor<void> {
-    private readonly environment: Environment = new Environment();
+    private environment: Environment = new Environment();
 
     visitExprStatement(expr: Expr): void {
         this.evaluate(expr.expression);
@@ -37,10 +38,11 @@ export class Interpreter implements ExprVisitor<Object>, StmtVisitor<void> {
 
     visitPrintStatement(expr: Print): void {
         const value: Object = this.evaluate(expr.expression);
+        // console.log(expr);
         console.log(value);
     }
 
-    visitVarStatement(stmt: Var): void {
+    visitVariableStatement(stmt: Var): void {
         let value: Object | null = null;
         if (stmt.initializer !== null) {
             value = this.evaluate(stmt.initializer);
@@ -48,8 +50,15 @@ export class Interpreter implements ExprVisitor<Object>, StmtVisitor<void> {
         this.environment.define(stmt.name.lexeme, value);
     }
 
-    visitVariableStatement(expr: StmtVariable): void {
-        this.environment.get(expr.name);
+    visitBlockStatement(expr: Block): void {
+        // create a new environment for the block
+        let blockEnvironment: Environment = new Environment(this.environment);
+        this.executeBlock(expr.statements, blockEnvironment);
+    }
+
+    // should have used visitIndentifierExpr, much more easier to recognize T_T
+    visitVariableExpr(expr: ExprVariable): Object {
+        return this.environment.get(expr.name)!;
     }
 
     visitLiteralExpr(expr: Literal): Object {
@@ -145,7 +154,9 @@ export class Interpreter implements ExprVisitor<Object>, StmtVisitor<void> {
     }
 
     visitAssignExpr(expr: Assign): Object {
-        return {};
+        const value: Object = this.evaluate(expr.value);
+        this.environment.assign(expr.name, value);
+        return value;
     }
 
     visitCallExpr(expr: Call): Object {
@@ -172,10 +183,6 @@ export class Interpreter implements ExprVisitor<Object>, StmtVisitor<void> {
         return {};
     }
 
-    visitVarExpr(expr: Variable): Object {
-        return {};
-    }
-
     // @ts-ignore
     accept<Object>(
         visitor: ExprVisitor<Object> | StmtVisitor<void>,
@@ -193,6 +200,23 @@ export class Interpreter implements ExprVisitor<Object>, StmtVisitor<void> {
     execute(stmt: Statement): void {
         // @ts-ignore
         return stmt.accept(this);
+    }
+
+    executeBlock(statements: Array<Statement>, environment: Environment): void {
+        // save the current environment to be restored later after block statement ends
+        const previous: Environment = this.environment;
+
+        try {
+            // modify the new environment to the environment passed by the argument
+            this.environment = environment;
+
+            for (let i = 0; i < statements.length; i++) {
+                this.execute(statements[i]);
+            }
+        } finally {
+            // remove the current environment and restore the previous environment
+            this.environment = previous;
+        }
     }
 
     isEqual(left: Object, right: Object): boolean {

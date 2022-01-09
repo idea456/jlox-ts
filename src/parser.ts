@@ -1,5 +1,6 @@
 import { error, tokenError } from "./error";
 import {
+    Assign,
     Binary,
     Expression,
     Grouping,
@@ -9,17 +10,22 @@ import {
     Variable as ExprVariable,
 } from "./expr";
 import { Token, TokenType } from "./scanner";
-import { Expr, Print, Statement, Var } from "./statement";
+import { Block, Expr, Print, Statement, Var } from "./statement";
 
 /**
  * Stratified grammar by precedence (lowest to highest):
  * program -> declaration* EOF;
  * declaration -> var_decl | statement
+ *
  * var_decl -> "var" IDENTIFIER ("=" expression)? ";"
- * statement -> print_stmt | expr_stmt
+ *
+ * statement -> print_stmt | expr_stmt | block;
  * print_stmt -> "print" expression ";"
  * expr_stmt -> expression ";"
- * expression -> equality;
+ * block -> "{" declaration* "}" // block can be empty also
+ *
+ * expression -> assignment;
+ * assignment -> IDENTIFIER "=" assignment | equality;
  * equality -> comparison (("==" | "!=") comparison)*
  * comparison -> term ((">" | "<" | ">=" | "<=") term)*
  * term ->  factor (("+" | "-") factor)*
@@ -80,6 +86,9 @@ export class Parser {
         if (this.match(TokenType.PRINT)) {
             return this.print_stmt();
         }
+        if (this.match(TokenType.LEFT_BRACE)) {
+            return new Block(this.block());
+        }
         return this.expression_stmt();
     }
 
@@ -92,6 +101,9 @@ export class Parser {
         return new Print(value);
     }
 
+    /**
+     * expr_stmt -> expression ";"
+     */
     private expression_stmt(): Statement {
         const value: Expression = this.expression();
         this.consume(TokenType.SEMICOLON, "Expect ';' after expression!");
@@ -99,10 +111,50 @@ export class Parser {
     }
 
     /**
-     * expression -> equality;
+     * case when "{}", blocks can also be empty
+     * block -> "{" declaration* "}"
+     */
+    private block(): Array<Statement> {
+        let statements: Array<Statement> = [];
+
+        while (!this.isAtEnd() && this.check(TokenType.RIGHT_BRACE)) {
+            statements.push(this.declaration()!);
+        }
+
+        this.consume(
+            TokenType.RIGHT_BRACE,
+            "Expect '}' after block statement!",
+        );
+        return statements;
+    }
+
+    /**
+     * expression -> assignment;
      */
     private expression(): Expression {
-        return this.equality();
+        return this.assignment();
+    }
+
+    /**
+     * assignment -> IDENTIFIER "=" assignment | equality;
+     */
+    private assignment(): Expression {
+        const expr: Expression = this.equality(); // this moves the current pointer already if it evaluates to IDENTIFIER
+
+        // so after expr evaluates to IDENTIFIER, we check for EQUAL
+        if (this.match(TokenType.EQUAL)) {
+            const equals: Token = this.previous();
+            // assignment is right-associative
+            const value: Expression = this.assignment(); // recursive call for right-associative
+
+            if (expr instanceof ExprVariable) {
+                const name: Token = expr.name;
+                return new Assign(name, value);
+            }
+            // case when ex: 2 = "abc"; or a + b = c;
+            tokenError(equals, "Invalid assignment target!");
+        }
+        return expr;
     }
 
     /**

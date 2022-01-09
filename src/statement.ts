@@ -1,4 +1,5 @@
 import { Expression } from "./expr";
+import { Token } from "./scanner";
 
 export abstract class Statement {
     abstract accept<R>(visitor: Visitor<R>): R;
@@ -7,6 +8,10 @@ export abstract class Statement {
 export interface Visitor<R> extends Statement {
     visitExprStatement(expr: Expr): R;
     visitPrintStatement(expr: Print): R;
+    visitVarStatement(expr: Var): R;
+    visitUnaryStatement(expr: Unary): R;
+    visitVariableStatement(expr: Variable): R;
+    visitAssignStatement(expr: Assign): R;
 }
 
 /**
@@ -38,5 +43,63 @@ export class Print extends Statement {
 
     accept<R>(visitor: Visitor<R>): R {
         return visitor.visitPrintStatement(this);
+    }
+}
+
+export class Var extends Statement {
+    readonly name: Token;
+    readonly initializer: Expression | null = null;
+
+    constructor(name: Token, initializer: Expression | null = null) {
+        super();
+        this.name = name;
+        this.initializer = initializer;
+    }
+
+    accept<R>(visitor: Visitor<R>): R {
+        return visitor.visitVarStatement(this);
+    }
+}
+
+export class Unary extends Statement {
+    readonly operator: Token;
+    readonly right: Expression;
+
+    constructor(operator: Token, right: Expression) {
+        super();
+        this.operator = operator;
+        this.right = right;
+    }
+
+    accept<R>(visitor: Visitor<R>): R {
+        return visitor.visitUnaryStatement(this);
+    }
+}
+
+export class Variable extends Statement {
+    readonly name: Token;
+
+    constructor(name: Token) {
+        super();
+        this.name = name;
+    }
+
+    accept<R>(visitor: Visitor<R>): R {
+        return visitor.visitVariableStatement(this);
+    }
+}
+
+export class Assign extends Statement {
+    readonly name: Token;
+    readonly value: Expression;
+
+    constructor(name: Token, value: Expression) {
+        super();
+        this.name = name;
+        this.value = value;
+    }
+
+    accept<R>(visitor: Visitor<R>): R {
+        return visitor.visitAssignStatement(this);
     }
 }

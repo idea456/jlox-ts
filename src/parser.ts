@@ -1,17 +1,31 @@
 import { error, tokenError } from "./error";
-import { Binary, Expression, Grouping, Literal, Nil, Unary } from "./expr";
+import {
+    Binary,
+    Expression,
+    Grouping,
+    Literal,
+    Nil,
+    Unary,
+    Variable as ExprVariable,
+} from "./expr";
 import { Token, TokenType } from "./scanner";
+import { Expr, Print, Statement, Var } from "./statement";
 
 /**
  * Stratified grammar by precedence (lowest to highest):
+ * program -> declaration* EOF;
+ * declaration -> var_decl | statement
+ * var_decl -> "var" IDENTIFIER ("=" expression)? ";"
+ * statement -> print_stmt | expr_stmt
  * print_stmt -> "print" expression ";"
+ * expr_stmt -> expression ";"
  * expression -> equality;
- * equality -> comparison (("==" | "!=") comparison)*;
- * comparison -> term ((">" | "<" | ">=" | "<=") term)*;
- * term ->  factor (("+" | "-") factor)* ;
- * factor -> unary (("*" | "/" | "%") unary)*;
- * unary -> ("!" / "-") unary | primary;
- * primary -> NUMBER | STRING | | "true" | "false" | "nil" | "(" expression ")" ;
+ * equality -> comparison (("==" | "!=") comparison)*
+ * comparison -> term ((">" | "<" | ">=" | "<=") term)*
+ * term ->  factor (("+" | "-") factor)*
+ * factor -> unary (("*" | "/" | "%") unary)*
+ * unary -> ("!" / "-") unary | primary
+ * primary -> NUMBER | STRING | IDENTIFIER | "true" | "false" | "nil" | "(" expression ")"
  */
 
 // sentinel class to unwind parser
@@ -25,6 +39,63 @@ export class Parser {
 
     constructor(tokens: Array<Token>) {
         this.tokens = tokens;
+    }
+
+    private declaration(): Statement | null {
+        try {
+            if (this.match(TokenType.VAR)) {
+                return this.var_decl();
+            }
+            return this.statement();
+        } catch (err: any) {
+            this.synchronize();
+            return null;
+        }
+    }
+
+    /**
+     *  var_decl -> "var" IDENTIFIER ("=" expression)? ";"
+     */
+    private var_decl(): Statement {
+        const name = this.consume(
+            TokenType.IDENTIFIER,
+            "Expect variable name!",
+        );
+        let initializer = null;
+        if (this.match(TokenType.EQUAL)) {
+            initializer = this.expression();
+        }
+
+        this.consume(
+            TokenType.SEMICOLON,
+            "Expect ';' after variable declaration!",
+        );
+        return new Var(name, initializer);
+    }
+
+    /**
+     * statement -> print_stmt | expression_stmt;
+     */
+    private statement(): Statement {
+        if (this.match(TokenType.PRINT)) {
+            return this.print_stmt();
+        }
+        return this.expression_stmt();
+    }
+
+    /**
+     * print_stmt -> "print" expression ";";
+     */
+    private print_stmt(): Statement {
+        const value: Expression = this.expression();
+        this.consume(TokenType.SEMICOLON, "Expect ';' after expression!");
+        return new Print(value);
+    }
+
+    private expression_stmt(): Statement {
+        const value: Expression = this.expression();
+        this.consume(TokenType.SEMICOLON, "Expect ';' after expression!");
+        return new Expr(value);
     }
 
     /**
@@ -119,6 +190,9 @@ export class Parser {
         if (this.match(TokenType.NUMBER, TokenType.STRING)) {
             return new Literal(this.previous().literal); // previous() is called since match() has consumed our token
         }
+        if (this.match(TokenType.IDENTIFIER)) {
+            return new ExprVariable(this.previous());
+        }
         if (this.match(TokenType.TRUE)) {
             return new Literal(true);
         }
@@ -140,7 +214,7 @@ export class Parser {
         throw tokenError(this.peek(), "Expect expression.");
     }
 
-    private consume(type: TokenType, message: string): Token | ParseError {
+    private consume(type: TokenType, message: string): Token {
         if (this.check(type)) {
             return this.advance();
         }
@@ -216,11 +290,12 @@ export class Parser {
         return this.peek().type === TokenType.EOF;
     }
 
-    parse(): Expression {
-        try {
-            return this.expression();
-        } catch {
-            return new Literal(Nil);
+    parse(): Array<Statement> {
+        let statements: Array<Statement> = [];
+        while (!this.isAtEnd()) {
+            // @ts-ignore
+            statements.push(this.declaration());
         }
+        return statements;
     }
 }

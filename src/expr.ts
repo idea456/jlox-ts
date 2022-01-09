@@ -33,7 +33,7 @@ export interface Visitor<R> extends Expression {
     visitLogicalExpr(expr: Logical): R;
     visitSuperExpr(expr: Super): R;
     visitThisExpr(expr: This): R;
-    visitVarExpr(expr: Var): R;
+    visitVarExpr(expr: Variable): R;
 }
 
 export class Binary extends Expression {
@@ -203,7 +203,7 @@ export class This extends Expression {
     }
 }
 
-export class Var extends Expression {
+export class Variable extends Expression {
     readonly name: Token;
 
     constructor(name: Token) {

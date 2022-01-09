@@ -13,13 +13,45 @@ import {
     Super,
     This,
     Unary,
-    Var,
-    Visitor,
+    Variable,
+    Visitor as ExprVisitor,
 } from "./expr";
 import { Token, TokenType } from "./scanner";
 import { runtimeError } from "./jlox";
+import {
+    Expr,
+    Print,
+    Statement,
+    Var,
+    Variable as StmtVariable,
+    Visitor as StmtVisitor,
+} from "./statement";
+import Environment from "./environment";
 
-export class Interpreter implements Visitor<Object> {
+export class Interpreter implements ExprVisitor<Object>, StmtVisitor<void> {
+    private readonly environment: Environment = new Environment();
+
+    visitExprStatement(expr: Expr): void {
+        this.evaluate(expr.expression);
+    }
+
+    visitPrintStatement(expr: Print): void {
+        const value: Object = this.evaluate(expr.expression);
+        console.log(value);
+    }
+
+    visitVarStatement(stmt: Var): void {
+        let value: Object | null = null;
+        if (stmt.initializer !== null) {
+            value = this.evaluate(stmt.initializer);
+        }
+        this.environment.define(stmt.name.lexeme, value);
+    }
+
+    visitVariableStatement(expr: StmtVariable): void {
+        this.environment.get(expr.name);
+    }
+
     visitLiteralExpr(expr: Literal): Object {
         return expr.value;
     }
@@ -140,18 +172,27 @@ export class Interpreter implements Visitor<Object> {
         return {};
     }
 
-    visitVarExpr(expr: Var): Object {
+    visitVarExpr(expr: Variable): Object {
         return {};
     }
 
-    accept<Object>(visitor: Visitor<Object>): Object {
+    // @ts-ignore
+    accept<Object>(
+        visitor: ExprVisitor<Object> | StmtVisitor<void>,
+    ): Object | void {
         // @ts-ignore
         const value: Object = {};
         return value;
     }
 
     evaluate(expr: Expression): Object {
+        // @ts-ignore
         return expr.accept(this);
+    }
+
+    execute(stmt: Statement): void {
+        // @ts-ignore
+        return stmt.accept(this);
     }
 
     isEqual(left: Object, right: Object): boolean {
@@ -182,10 +223,11 @@ export class Interpreter implements Visitor<Object> {
         throw new RuntimeError(operator, "Operands must be both integers!");
     }
 
-    interpret(expr: Expression) {
+    interpret(statements: Array<Statement>) {
         try {
-            const value: Object = this.evaluate(expr);
-            console.log(value);
+            for (let i = 0; i < statements.length; i++) {
+                this.execute(statements[i]);
+            }
         } catch (err: any) {
             // ISSUE: Catch clause variable type annotation must be 'any' or 'unknown' if specified
             console.log("oh no", err);

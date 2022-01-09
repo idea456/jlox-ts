@@ -5,6 +5,7 @@ import { Expression } from "./expr";
 import { Interpreter } from "./interpreter";
 import { Parser } from "./parser";
 import Scanner, { Token } from "./scanner";
+import { Statement } from "./statement";
 
 var hadError = false;
 var hadRuntimeError = false;
@@ -54,9 +55,9 @@ function runPrompt() {
         let scanner = new Scanner(line);
         let tokens: Array<Token> = scanner.scanTokens();
         parser = new Parser(tokens);
-        let expression: Expression = parser.parse();
-        console.log("expr : ", expression);
-        interpreter.interpret(expression);
+        let statements: Array<Statement> = parser.parse();
+        // console.log("expr : ", statements);
+        interpreter.interpret(statements);
         if (hadError) {
             process.exit(65);
         }
@@ -72,12 +73,4 @@ export function runtimeError(err: RuntimeError) {
     hadRuntimeError = true;
 }
 
-// function run(source: string) {
-//     const scanner = new Scanner(source);
-//     const tokens = scanner.scanTokens();
-
-//     tokens.map((token: string) => {
-//         console.log(token);
-//     });
-// }
 executeCommandLine(process.argv);

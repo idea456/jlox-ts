@@ -54,9 +54,10 @@ function runPrompt() {
 
         let scanner = new Scanner(line);
         let tokens: Array<Token> = scanner.scanTokens();
+        console.log(tokens)
         parser = new Parser(tokens);
         let statements: Array<Statement> = parser.parse();
-        // console.log("expr : ", statements);
+        console.log("expr : ", statements[0]);
         interpreter.interpret(statements);
         if (hadError) {
             process.exit(65);
